@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  iiif-openslide:
+    image: mekarsalab/openslide:v1.0
+    container_name: iiif-openslide
+    ports:
+      - "5010:5010"
+    volumes:
+      # - ./media:/app/media
+      - type: volume 
+        source: media_nfs
+        target: /app/media
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+    restart: unless-stopped
+
+volumes:
+  media_nfs:
+    driver: local
+    driver_opts:
+      type: nfs 
+      o: addr=172.16.16.60,rw
+      device: ":/data/nfs"
