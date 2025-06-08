@@ -3,25 +3,23 @@ version: '3.8'
 services:
   iiif-openslide:
     image: mekarsalab/openslide:v1.0
-    container_name: iiif-openslide
-    ports:
-      - "5010:5010"
     volumes:
-      # - ./media:/app/media
-      - type: volume 
-        source: media_nfs
-        target: /app/media
+      - /mnt/share:/app/media
     deploy:
+      mode: replicated
+      replicas: 4
+      endpoint_mode: vip
       resources:
         limits:
           cpus: '1.0'
-          memory: 512M
+          memory: 512MB
     restart: unless-stopped
 
-volumes:
-  media_nfs:
-    driver: local
-    driver_opts:
-      type: nfs 
-      o: addr=172.16.16.60,rw
-      device: ":/data/nfs"
+  haproxy-lb:
+    image: haproxy:alpine
+    ports:
+      - "8080:80"
+    depends_on:
+      - iiif-openslide
+    volumes:
+      - ./haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
