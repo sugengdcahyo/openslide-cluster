@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  iiif-openslide:
+    image: mekarsalab/openslide:v1.0
+    volumes:
+      - /mnt/share:/app/media
+    deploy:
+      mode: replicated
+      replicas: 4
+      endpoint_mode: vip
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512MB
+    restart: unless-stopped
+
+  haproxy-lb:
+    image: haproxy:alpine
+    ports:
+      - "8080:80"
+    depends_on:
+      - iiif-openslide
+    volumes:
+      - ./haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
