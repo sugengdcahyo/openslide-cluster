@@ -1,0 +1,3 @@
+[submodule "services/ozone"]
+	path = services/ozone
+	url = https://github.com/apache/ozone-docker.git
