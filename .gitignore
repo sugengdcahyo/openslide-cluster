@@ -1,5 +1,5 @@
-<<<<<<< HEAD
 # Byte-compiled / optimized / DLL files
+**/.DS_Store
 __pycache__/
 *.py[cod]
 *$py.class
@@ -193,7 +193,5 @@ cython_debug/
 #  refer to https://docs.cursor.com/context/ignore-files
 .cursorignore
 .cursorindexingignore
-=======
 venv
 media
->>>>>>> b09814e (Init project)
