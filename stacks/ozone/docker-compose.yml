@@ -1,18 +1,3 @@
-# Licensed to the Apache Software Foundation (ASF) under one
-# or more contributor license agreements.  See the NOTICE file
-# distributed with this work for additional information
-# regarding copyright ownership.  The ASF licenses this file
-# to you under the Apache License, Version 2.0 (the
-# "License"); you may not use this file except in compliance
-# with the License.  You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
 
 version: "3.9"
 
@@ -23,19 +8,20 @@ x-image:
     - ozone-data:/data
 
 x-common-config:
-   &common-config
-   OZONE-SITE.XML_hdds.datanode.dir: "/data/hdds"
-   OZONE-SITE.XML_ozone.metadata.dirs: "/data/metadata"
-   OZONE-SITE.XML_ozone.om.address: "om"
-   OZONE-SITE.XML_ozone.om.http-address: "om:9874"
-   OZONE-SITE.XML_ozone.recon.address: "recon:9891"
-   OZONE-SITE.XML_ozone.recon.db.dir: "/data/metadata/recon"
-   OZONE-SITE.XML_ozone.replication: "1"
-   OZONE-SITE.XML_ozone.scm.block.client.address: "scm"
-   OZONE-SITE.XML_ozone.scm.client.address: "scm"
-   OZONE-SITE.XML_ozone.scm.datanode.id.dir: "/data/metadata"
-   OZONE-SITE.XML_ozone.scm.names: "scm"
-   no_proxy: "om,recon,scm,s3g,localhost,127.0.0.1"
+  &common-config
+  OZONE-SITE.XML_hdds.datanode.dir: "/data/hdds"
+  OZONE-SITE.XML_ozone.metadata.dirs: "/data/metadata"
+  OZONE-SITE.XML_ozone.om.address: "om"
+  OZONE-SITE.XML_ozone.om.http-address: "om:9874"
+  OZONE-SITE.XML_ozone.recon.address: "recon:9891"
+  OZONE-SITE.XML_ozone.recon.db.dir: "/data/metadata/recon"
+  OZONE-SITE.XML_ozone.replication: "1"
+  OZONE-SITE.XML_ozone.scm.block.client.address: "scm"
+  OZONE-SITE.XML_ozone.scm.client.address: "scm"
+  OZONE-SITE.XML_ozone.scm.datanode.id.dir: "/data/metadata"
+  OZONE-SITE.XML_ozone.scm.names: "scm"
+
+  no_proxy: "om,recon,scm,s3g,localhost,127.0.0.1"
 
 services:
   datanode:
@@ -45,9 +31,11 @@ services:
       - swarm-net
     ports:
       - 9864
+    
     deploy:
       mode: replicated
       replicas: 3
+    
     volumes:
       - ozone-data:/data
     command: ["ozone","datanode"]
@@ -88,14 +76,9 @@ services:
     <<: *image
     ports:
       - 9878:9878
-    secrets:
-      - global-access-key
-      - global-secret-key
     environment:
       <<: *common-config
       OZONE-SITE.XML_ozone.s3g.authentication.type: SIMPLE
-      OZONE-SITE.XML_ozone.s3g.awsAccessKeyId: "/run/secrets/global-access-key"
-      OZONE-SITE.XML_ozone.s3g.awsSecretAccessKey: "/run/secrets/global-secret-key"
     command: ["ozone","s3g"]
 
   httpfs:
@@ -112,15 +95,10 @@ volumes:
     driver: local
     driver_opts:
       type: none
-      device: /data/shared/media
+      device: /mnt/glusterfs
       o: bind
 
 networks:
   swarm-net:
     external: true
 
-secrets:
-  global-access-key:
-    external: true
-  global-secret-key:
-    external: true

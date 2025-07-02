@@ -4,7 +4,7 @@ services:
   iiif-openslide:
     image: mekarsalab/openslide:v1.0
     volumes:
-      - /mnt/share:/app/media
+      - /mnt/glusterfs:/app/media
     deploy:
       mode: replicated
       replicas: 4
